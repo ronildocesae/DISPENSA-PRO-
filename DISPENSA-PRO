@@ -597,3 +597,31 @@
         }
 
         // 🔄 ATUALIZAR VALOR
+        function atualizarTotal() {
+            const total = calcularTotal();
+            document.getElementById('valor-total').textContent = `R$ ${total.toFixed(2)}`;
+            
+            if (itens.length === 0) {
+                document.getElementById('contagem').textContent = 'Nenhum item cadastrado';
+            } else if (itens.length === 1) {
+                document.getElementById('contagem').textContent = '1 item cadastrado';
+            } else {
+                document.getElementById('contagem').textContent = `${itens.length} itens cadastrados`;
+            }
+        }
+
+        // 🧹 LIMPAR TUDO
+        function limparTudo() {
+            if (itens.length === 0) return;
+            if (confirm('Tem certeza? Isso apaga TODOS os itens!')) {
+                itens = [];
+                salvarEAtualizar();
+            }
+        }
+
+        // 🚀 INICIALIZAR
+        atualizarTotal();
+    </script>
+</body>
+</html>
+
