@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Alimentar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #E8F5F0 0%, #D4EDE4 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .back {
+            color: #2A7F62;
+            font-size: 16px;
+            cursor: pointer;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #1E5C45;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #4A8B74;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .clock-box {
+            background: linear-gradient(135deg, #1E7A59 0%, #2A9D75 100%);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            color: white;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(30, 122, 89, 0.25);
+        }
+
+        .time {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .date {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .total-box {
+            background: linear-gradient(135deg, #1E7A59 0%, #2A9D75 100%);
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 15px rgba(30, 122, 89, 0.2);
+        }
+
+        .total-label {
+            font-size: 14px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .total-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin: 8px 0;
+        }
+
+        .total-count {
+            font-size: 13px;
+            opacity: 0.85;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2A9D75 0%, #1E7A59 100%);
+            color: white;
+            box-shadow: 0 4px 10px rgba(42, 157, 117, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #2A7F62;
+            border: 2px solid #2A7F62;
+        }
+
+        .btn-danger {
+            background: #E74C3C;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1E5C45;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: #2A9D75;
+            border-radius: 2px;
+        }
+
+        .input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #E0EBE6;
+            border-radius: 10px;
+            font-size: 15px;
+            margin-bottom: 16px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .input:focus {
+            border-color: #2A9D75;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 12px;
+            background: #F4F9F7;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #222;
+            font-size: 15px;
+        }
+
+        .item-details {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .item-value {
+            font-weight: 700;
+            color: #1E7A59;
+            font-size: 16px;
+        }
+
+        .delete-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #FDECEA;
+            color: #E74C3C;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .item-catalogo {
+            display: flex;
+            align-items: center;
+            padding: 14px 12px;
+            background: #F4F9F7;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .item-catalogo:active {
+            background: #E0EBE6;
+        }
+
+        .item-catalogo .icone {
+            font-size: 26px;
+            width: 40px;
+            text-align: center;
+        }
+
+        .item-catalogo .info {
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        .item-catalogo .nome {
+            font-weight: 600;
+            font-size: 15px;
+            color: #222;
+        }
+
+        .item-catalogo .categoria {
+            font-size: 12px;
+            color: #7FB2F0;
+            margin-top: 2px;
+        }
+
+        .item-catalogo .preco {
+            font-weight: 700;
+            color: #1E7A59;
+            font-size: 15px;
+        }
+
+        .add-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #2A9D75;
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .badge {
+            background: #D4EDE4;
+            color: #1E7A59;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .divider {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #2A9D75, transparent);
+            border: none;
+            margin: 25px 0;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- ⏺ TELA INICIAL / DASHBOARD -->
+        <div id="inicio" class="screen active">
+            <div class="header">
+                <h1>GESTÃO ALIMENTAR</h1>
+                <p>Controle Profissional de Alimentos</p>
+            </div>
+
+            <div class="clock-box">
+                <div class="time" id="relogio">14:50:33</div>
+                <div class="date" id="data">Quinta-feira • 24 de Setembro de 2026</div>
+            </div>
+
+            <div class="total-box">
+                <div class="total-label">VALOR TOTAL DOS ALIMENTOS</div>
+                <div class="total-value" id="valor-total">R$ 0,00</div>
+                <div class="total-count" id="contagem">Nenhum item cadastrado</div>
+                <button class="btn-secondary" style="padding: 8px 16px; margin-top: 12px; width: auto; border-radius: 8px; font-size: 13px;" onclick="limparTudo()">Limpar Tudo</button>
+            </div>
+
+            <hr class="divider">
+
+            <button class="btn btn-primary" onclick="irPara('catalogo')">
+                🛒 Adicionar Rápido do Catálogo
+            </button>
+
+            <button class="btn btn-secondary" onclick="irPara('manual')">
+                ✏️ Adicionar Manualmente
+            </button>
+
+            <button class="btn btn-secondary" onclick="irPara('lista')">
+                📋 Ver Lista de Itens
+            </button>
+        </div>
+
+        <!-- 📋 TELA: ADICIONAR MANUALMENTE -->
+        <div id="manual" class="screen">
+            <span class="back" onclick="irPara('inicio')">← Voltar</span>
+            
+            <div class="card">
+                <h3 class="card-title">Adicionar Novo Alimento</h3>
+                
+                <input type="text" id="nome-manual" class="input" placeholder="Nome do Alimento (ex: Arroz)">
+                
+                <input type="number" id="qtd-manual" class="input" placeholder="Quantidade" value="1" min="1">
+                
+                <input type="number" id="preco-manual" class="input" placeholder="Preço Unitário (R$)" step="0.01" min="0">
+                
+                <button class="btn btn-primary" onclick="adicionarManual()">
+                    ✓ Adicionar
+                </button>
+            </div>
+        </div>
+
+        <!-- 📖 TELA: CATÁLOGO RÁPIDO -->
+        <div id="catalogo" class="screen">
+            <span class="back" onclick="irPara('inicio')">← Voltar</span>
+            
+            <div class="card">
+                <h3 class="card-title">🛒 Catálogo Rápido</h3>
+                
+                <input type="text" id="busca-catalogo" class="input" placeholder="🔍 Buscar alimento..." oninput="mostrarCatalogo()">
+                
+                <div id="lista-catalogo" style="max-height: 500px; overflow-y: auto; margin-top: 10px;">
+                    <!-- Itens carregam aqui -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 📝 TELA: LISTA DE LANÇAMENTOS -->
+        <div id="lista" class="screen">
+            <span class="back" onclick="irPara('inicio')">← Voltar</span>
+            
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+                    <h3 class="card-title" style="margin:0; padding:0; border:none;">Lista de Alimentos</h3>
+                    <span class="badge" id="qtd-itens">0 itens</span>
+                </div>
+                
+                <div id="lista-itens">
+                    <div class="empty">
+                        <div class="empty-icon">📦</div>
+                        <p>Nenhum alimento cadastrado ainda</p>
+                        <p style="font-size: 13px; margin-top: 5px;">Vá em "Adicionar Rápido" ou "Adicionar Manualmente"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 🕐 RELÓGIO E DATA
+        function atualizarRelogio() {
+            const agora = new Date();
+            const horas = String(agora.getHours()).padStart(2, '0');
+            const minutos = String(agora.getMinutes()).padStart(2, '0');
+            const segundos = String(agora.getSeconds()).padStart(2, '0');
+            document.getElementById('relogio').textContent = `${horas}:${minutos}:${segundos}`;
+            
+            const opcoes = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            const dataCompleta = agora.toLocaleDateString('pt-BR', opcoes);
+            document.getElementById('data').textContent = dataCompleta;
+        }
+        setInterval(atualizarRelogio, 1000);
+        atualizarRelogio();
+
+        // 📦 CATÁLOGO DE ALIMENTOS COM PREÇOS
+        const catalogoAlimentos = [
+            { nome: "Ovos (12 unidades)", preco: 8.99, icone: "🥚", categoria: "Mercearia" },
+            { nome: "Pão de Forma", preco: 6.50, icone: "🍞", categoria: "Padaria" },
+            { nome: "Leite 1 Litro", preco: 5.99, icone: "🥛", categoria: "Laticínios" },
+            { nome: "Banana (kg)", preco: 4.99, icone: "🍌", categoria: "Hortifruti" },
+            { nome: "Cebola (kg)", preco: 3.99, icone: "🧅", categoria: "Hortifruti" },
+            { nome: "Batata (kg)", preco: 4.50, icone: "🥔", categoria: "Hortifruti" },
+            { nome: "Laranja (kg)", preco: 5.99, icone: "🍊", categoria: "Hortifruti" },
+            { nome: "Margarina 500g", preco: 7.99, icone: "🧈", categoria: "Laticínios" },
+            { nome: "Arroz 5kg", preco: 29.90, icone: "🍚", categoria: "Mercearia" },
+            { nome: "Feijão 1kg", preco: 8.99, icone: "🫘", categoria: "Mercearia" },
+            { nome: "Açúcar 1kg", preco: 4.99, icone: "🍬", categoria: "Mercearia" },
+            { nome: "Café 500g", preco: 12.99, icone: "☕", categoria: "Mercearia" },
+            { nome: "Óleo de Soja 900ml", preco: 9.99, icone: "🫒", categoria: "Mercearia" },
+            { nome: "Macarrão 500g", preco: 4.50, icone: "🍝", categoria: "Mercearia" },
+            { nome: "Farinha de Trigo 1kg", preco: 5.99, icone: "🌾", categoria: "Mercearia" },
+            { nome: "Carne Moída (kg)", preco: 32.90, icone: "🥩", categoria: "Açougue" },
+            { nome: "Frango (kg)", preco: 15.90, icone: "🍗", categoria: "Açougue" },
+            { nome: "Queijo Mussarela (kg)", preco: 45.90, icone: "🧀", categoria: "Laticínios" },
+            { nome: "Tomate (kg)", preco: 6.99, icone: "🍅", categoria: "Hortifruti" },
+            { nome: "Alface", preco: 3.50, icone: "🥬", categoria: "Hortifruti" },
+            { nome: "Cenoura (kg)", preco: 4.99, icone: "🥕", categoria: "Hortifruti" },
+            { nome: "Maçã (kg)", preco: 7.99, icone: "🍎", categoria: "Hortifruti" },
+            { nome: "Biscoito Recheado", preco: 3.99, icone: "🍪", categoria: "Mercearia" },
+            { nome: "Sabonete", preco: 2.99, icone: "🧼", categoria: "Limpeza" },
+            { nome: "Papel Higiênico (4 rolos)", preco: 12.99, icone: "🧻", categoria: "Limpeza" },
+            { nome: "Detergente", preco: 3.50, icone: "🧴", categoria: "Limpeza" },
+            { nome: "Sabão em Pó 1kg", preco: 14.99, icone: "🫧", categoria: "Limpeza" },
+            { nome: "Refrigerante 2 Litros", preco: 9.99, icone: "🥤", categoria: "Bebidas" },
+            { nome: "Água Mineral 1,5L", preco: 3.99, icone: "💧", categoria: "Bebidas" },
+            { nome: "Iogurte", preco: 4.99, icone: "🥛", categoria: "Laticínios" },
+        ];
+
+        // 📋 LISTA DE ITENS CADASTRADOS (SALVA NO NAVEGADOR)
+        let itens = JSON.parse(localStorage.getItem('itensAlimentos')) || [];
+
+        // 🔄 NAVEGAÇÃO ENTRE TELAS
+        function irPara(telaId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(telaId).classList.add('active');
+            
+            if (telaId === 'catalogo') mostrarCatalogo();
+            if (telaId === 'lista') mostrarLista();
+        }
+
+        // 📖 MOSTRAR CATÁLOGO
+        function mostrarCatalogo() {
+            const busca = document.getElementById('busca-catalogo').value.toLowerCase();
+            const lista = document.getElementById('lista-catalogo');
+            
+            const filtrados = catalogoAlimentos.filter(item =>
+                item.nome.toLowerCase().includes(busca) ||
+                item.categoria.toLowerCase().includes(busca)
+            );
+
+            lista.innerHTML = filtrados.map(item => `
+                <div class="item-catalogo">
+                    <span class="icone">${item.icone}</span>
+                    <div class="info">
+                        <div class="nome">${item.nome}</div>
+                        <div class="categoria">${item.categoria}</div>
+                    </div>
+                    <div class="preco">R$ ${item.preco.toFixed(2)}</div>
+                    <button class="add-btn" onclick="adicionarDoCatalogo('${item.nome}', ${item.preco})">+</button>
+                </div>
+            `).join('');
+        }
+
+        // ➕ ADICIONAR DO CATÁLOGO
+        function adicionarDoCatalogo(nome, preco) {
+            const item = {
+                id: Date.now(),
+                nome: nome,
+                quantidade: 1,
+                preco: preco
+            };
+            itens.push(item);
+            salvarEAtualizar();
+            alert(`✅ ${nome} adicionado!`);
+        }
+
+        // ✏️ ADICIONAR MANUALMENTE
+        function adicionarManual() {
+            const nome = document.getElementById('nome-manual').value.trim();
+            const qtd = parseInt(document.getElementById('qtd-manual').value) || 1;
+            const preco = parseFloat(document.getElementById('preco-manual').value) || 0;
+
+            if (!nome) {
+                alert('⚠️ Digite o nome do alimento!');
+                return;
+            }
+
+            const item = {
+                id: Date.now(),
+                nome: nome,
+                quantidade: qtd,
+                preco: preco
+            };
+            itens.push(item);
+            
+            // Limpar campos
+            document.getElementById('nome-manual').value = '';
+            document.getElementById('qtd-manual').value = '1';
+            document.getElementById('preco-manual').value = '';
+
+            salvarEAtualizar();
+            alert(`✅ ${nome} adicionado!`);
+        }
+
+        // 📝 MOSTRAR LISTA DE ITENS
+        function mostrarLista() {
+            const lista = document.getElementById('lista-itens');
+            document.getElementById('qtd-itens').textContent = `${itens.length} ${itens.length === 1 ? 'item' : 'itens'}`;
+
+            if (itens.length === 0) {
+                lista.innerHTML = `
+                    <div class="empty">
+                        <div class="empty-icon">📦</div>
+                        <p>Nenhum alimento cadastrado ainda</p>
+                        <p style="font-size: 13px; margin-top: 5px;">Vá em "Adicionar Rápido" ou "Adicionar Manualmente"</p>
+                    </div>
+                `;
+                return;
+            }
+
+            lista.innerHTML = itens.map(item => `
+                <div class="item">
+                    <div class="item-info">
+                        <div class="item-name">${item.nome}</div>
+                        <div class="item-details">QTD ${item.quantidade} • UNIT R$ ${item.preco.toFixed(2)}</div>
+                    </div>
+                    <div class="item-value">R$ ${(item.preco * item.quantidade).toFixed(2)}</div>
+                    <button class="delete-btn" onclick="excluirItem(${item.id})">×</button>
+                </div>
+            `).join('');
+        }
+
+        // 🗑️ EXCLUIR ITEM
+        function excluirItem(id) {
+            if (confirm('Tem certeza que deseja excluir este item?')) {
+                itens = itens.filter(item => item.id !== id);
+                salvarEAtualizar();
+                mostrarLista();
+            }
+        }
+
+        // 💰 CALCULAR TOTAL
+        function calcularTotal() {
+            return itens.reduce((soma, item) => soma + (item.preco * item.quantidade), 0);
+        }
+
+        // 💾 SALVAR NO NAVEGADOR E ATUALIZAR TELA
+        function salvarEAtualizar() {
+            localStorage.setItem('itensAlimentos', JSON.stringify(itens));
+            atualizarTotal();
+        }
+
+        // 🔄 ATUALIZAR VALOR
